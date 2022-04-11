@@ -39,6 +39,20 @@ jobs:
           healthcheck: https://thang-pokedex.herokuapp.com/health
           checkstring: "ok"
           rollbackonhealthcheckfailed: true
+      - name: Success notification
+        uses: rjstone/discord-webhook-notify@v1.0.4
+        with:
+          severity: info
+          description: A new version of Pokedex deployed https://thang-pokedex.herokuapp.com/
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Failure notification
+        if: failure()
+        uses: rjstone/discord-webhook-notify@v1.0.4
+        with:
+          severity: error
+          description: Build failed for https://github.com/Deninc/full-stack-open-pokedex/commit/$GITHUB_SHA
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
